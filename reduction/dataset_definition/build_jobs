@@ -1,0 +1,215 @@
+#!/bin/bash
+
+streams=(
+	"SingleMuon"
+	"DoubleEG"
+	"ZeroBias"
+)
+
+dataset_exts=(
+	"Run2016H-18Apr2017-v1/MINIAOD"
+)
+
+template_file="job_template.py"
+check_template_file="CheckRootFile_template"
+
+json_file="run_ls_selection.json"
+
+config_file="cfg.py"
+log_file="log"
+job_log_file="job_log"
+check_file="CheckRootFile.cc"
+finished_file="finished"
+success_file="success"
+
+#----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+
+function MakeInputFiles()
+{
+	# get list of files
+	for ext in ${dataset_exts[*]}
+	do
+		dasgoclient --query "file dataset=/$stream/$ext run between [$run_min, $run_max]" >> "$dir_out/input_files"
+	done
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function MakeConfig()
+{
+	(
+		echo "#!/bin/sh"
+		echo "export HOME=\"/afs/cern.ch/exp/totem/scratch/jkaspar\""
+		echo ""
+		echo "source \"/cvmfs/cms.cern.ch/cmsset_default.sh\""
+		echo "cd \"$CMSSW_BASE\""
+		echo "cmsenv"
+		echo "cd \"$execute_dir\""
+		echo ""
+		cat "common_job_code"
+		echo ""
+		echo "("
+		echo ""
+		echo "date"
+		echo ""
+		echo "voms-proxy-info"
+		echo ""
+		echo "# prepare directory for reco"
+		echo "mkdir -p \"$reco_dir\""
+		echo ""
+		echo "# run CMSSW"
+		echo "cmsRun \"$config_file\" > \"$log_file\""
+		echo "cmsRun_retCode=\$?"
+		echo "if [ \$cmsRun_retCode -ne 0 ]"
+		echo "then"
+		echo "    echo \"cmsRun crashed: return code = \$cmsRun_retCode\""
+		echo "    ls -l > \"$finished_file\""
+		echo "    exit 1"
+		echo "fi"
+		echo ""
+		echo "date"
+		echo ""
+		echo "# check ROOT file consistency"
+		echo "root -b -q -l \"$check_file\" 2> /dev/null"
+		echo "if [ \$? -eq 0 ]"
+		echo "then"
+		echo "    # workaround for problems with eos cp"
+		echo "    export LD_LIBRARY_PATH=\"\""
+		echo "    "
+		echo "    success=1"
+		echo "    outputDir=\"$storage_dir\""
+		echo "    RemoteMkdir \"\$outputDir\""
+    	echo "    SafeCmd RemoteCopy \"$config_file\" \"\$outputDir/${output_tag}_cfg.py\" || success=0"
+    	echo "    SafeCmd RemoteCopy \"$log_file\" \"\$outputDir/${output_tag}.log\" || success=0"
+    	echo "    SafeCmd RemoteCopy \"run_ls_selection.json\" \"\$outputDir/${output_tag}.json\" || success=0"
+    	echo "    SafeCmd RemoteCopy \"$output_file\" \"\$outputDir/${output_tag}.root\" || success=0"
+		echo "    if [ \$success -eq 1 ]"
+		echo "    then"
+		echo "        touch \"$success_file\""
+		echo "    fi"
+		echo "else"
+		echo "    echo \"The reco file is corrupted, you will need to rerun this job.\""
+		echo "fi"
+		echo ""
+		echo "ls -l > \"$finished_file\""
+		echo ""
+		echo ") &> $job_log_file"
+	) > "$dir_out/job"
+
+	chmod u+x "$dir_out/job"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function MakeScript()
+{
+	cat "$template_file" | sed -e "\
+			s|\$input_file_commands|$input_file_commands|;\
+			s|\$output_file|$output_file|;\
+		" > "$dir_out/$config_file"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function MakeCheckScript()
+{
+    cat "$check_template_file" | sed "\
+        s|\$file|$output_file|;\
+      " > "$dir_out/$check_file"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function ProcessOneStream()
+{
+	dir_out="../work_dir/fill$fill/$stream"
+
+	# make output directory
+	mkdir -p "$dir_out"
+
+	# set directories, filenames, etc.
+	execute_dir="`pwd -P`/$dir_out"
+	reco_dir="/pool"
+
+	storage_dir="/eos/totem/data/ctpps/reconstruction/2016/postTS2_alignment_data/version1"
+
+	output_file="$reco_dir/fill${fill}_$stream.root"
+	output_tag="fill${fill}_$stream"
+
+	# get input-file list
+	MakeInputFiles
+
+	# process input files
+	input_file_commands=""
+	for file in `cat "$dir_out/input_files"`
+	do
+        input_file_commands="${input_file_commands}process.source.fileNames.append(\"$file\")\n"
+	done
+
+	# make config
+	MakeConfig
+
+	# make JSON file
+	(
+		echo "{"
+		for run in `seq $run_min $run_max`
+		do
+			entry="\"$run\": [[1, 99999]]"
+			if [ "$run" -ne "$run_max" ]
+			then
+				echo "    $entry,"
+			else
+				echo "    $entry"
+			fi
+		done
+		echo "}"
+	) > "$dir_out/$json_file"
+
+	# make job script
+	MakeScript
+
+	# make check script
+	MakeCheckScript
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function ProcessOneFill
+{
+	fill="$1"
+	run_min="$2"
+	run_max="$3"
+
+	echo "* $fill"
+
+ 	# process all streams
+ 	for stream in ${streams[*]}
+ 	do
+ 		ProcessOneStream &
+ 	done
+ 
+ 	wait
+}
+
+#----------------------------------------------------------------------------------------------------
+
+ProcessOneFill "5393" "282730" "282735"
+ProcessOneFill "5401" "282920" "282924"
+ProcessOneFill "5405" "283040" "283043"
+ProcessOneFill "5406" "283049" "283067"
+ProcessOneFill "5418" "283305" "283308"
+ProcessOneFill "5421" "283353" "283359"
+ProcessOneFill "5423" "283407" "283416"
+ProcessOneFill "5424" "283453" "283453"
+ProcessOneFill "5427" "283478" "283481"
+ProcessOneFill "5433" "283548" "283560"
+ProcessOneFill "5437" "283672" "283685"
+ProcessOneFill "5439" "283820" "283835"
+ProcessOneFill "5441" "283863" "283865"
+ProcessOneFill "5442" "283876" "283878"
+ProcessOneFill "5443" "283884" "283885"
+ProcessOneFill "5446" "283933" "283934"
+ProcessOneFill "5448" "283946" "283964"
+ProcessOneFill "5450" "284006" "284014"
+ProcessOneFill "5451" "284025" "284044"
