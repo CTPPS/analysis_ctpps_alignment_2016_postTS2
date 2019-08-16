@@ -45,18 +45,20 @@ double FindMax(TF1 *ff)
 
 TF1 *ff_fit = new TF1("ff_fit", "[0] * exp(-(x-[1])*(x-[1])/2./[2]/[2]) + [3] + [4]*x");
 
-TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int rp)
+TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int /*rp*/)
 {
 	bool saveDetails = false;
 	TDirectory *d_top = gDirectory;
 
 	double y_max_fit = 10.;
 
-	// 2018 settings
-	if (rp ==  23) y_max_fit = 3.5 + ((aligned) ? 0. : 3.7);
-	if (rp ==   3) y_max_fit = 4.5 + ((aligned) ? 0. : 3.8);
-	if (rp == 103) y_max_fit = 5.5 + ((aligned) ? 0. : 3.2);
-	if (rp == 123) y_max_fit = 4.8 + ((aligned) ? 0. : 3.1);
+	// TODO: needed?
+	/*
+	if (rp ==  23) y_max_fit = 3.0 + ((aligned) ? 0. : 3.7);
+	if (rp ==   3) y_max_fit = 3.0 + ((aligned) ? 0. : 3.8);
+	if (rp == 103) y_max_fit = 3.0 + ((aligned) ? 0. : 3.2);
+	if (rp == 123) y_max_fit = 3.0 + ((aligned) ? 0. : 3.1);
+	*/
 
 	TGraphErrors *g_y_mode_vs_x = new TGraphErrors();
 
@@ -162,7 +164,7 @@ TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int r
 
 int main()
 {
-	bool useAuxFits = true;
+	bool useAuxFits = false;
 
 	// load config
 	if (cfg.LoadFrom("config.py") != 0)
@@ -185,11 +187,12 @@ int main()
 		double sh_x;
 	};
 
+	// TODO
 	vector<RPData> rpData = {
-		{ "L_2_F", 23,  "sector 45", (cfg.xangle == 160) ? 0.19 : 0.17, -42. },
-		{ "L_1_F",  3,  "sector 45", (cfg.xangle == 160) ? 0.19 : 0.18, -3.6 },
-		{ "R_1_F", 103, "sector 56", (cfg.xangle == 160) ? 0.40 : 0.34, -2.8 },
-		{ "R_2_F", 123, "sector 56", (cfg.xangle == 160) ? 0.39 : 0.34, -41.9 }
+		{ "L_1_F",   3, "sector 45", 0.17, -3. },
+		{ "L_1_N",   2, "sector 45", 0.18, -3. },
+		//{ "R_1_N", 102, "sector 56", 0.34, -3. },
+		{ "R_1_F", 103, "sector 56", 0.34, -3. }
 	};
 
 	// get input

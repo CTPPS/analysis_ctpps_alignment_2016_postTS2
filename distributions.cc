@@ -286,6 +286,13 @@ unsigned int SectorData::Process(const vector<CTPPSLocalTrackLite> &tracks)
 		m_h2_y_vs_x_bef_sel[rpIdDw]->Fill(tr.getX(), tr.getY());
 	}
 
+	// for sector 56, add a fake upstream track so as the code below can still work
+	if (name == "sector 56")
+	{
+		tracksUp.emplace_back(0, 0., 0., 0., 0.,
+			0., 0., 0., 0., 0., (CTPPSpixelLocalTrackReconstructionInfo)0, 0, 0., 0.);
+	}
+
 	// skip crowded events
 	if (tracksUp.size() > 2)
 		return 0;
@@ -481,8 +488,9 @@ int main()
 		return 1;
 	}
 
-	if (cfg.input_files.size() > 15)
-		cfg.input_files.resize(15);
+	// TODO
+	if (cfg.input_files.size() > 40)
+		cfg.input_files.resize(40);
 
 	printf("-------------------- config ----------------------\n");
 	cfg.Print(true);

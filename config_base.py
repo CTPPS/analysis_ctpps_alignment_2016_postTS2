@@ -46,12 +46,12 @@ config = cms.PSet(
     ),
 
     sector_56 = cms.PSet(
-	  cut_h_apply = cms.bool(True),
+	  cut_h_apply = cms.bool(False),
 	  cut_h_a = cms.double(-1),
 	  cut_h_c = cms.double(0.),
 	  cut_h_si = cms.double(0.2),
 
-	  cut_v_apply = cms.bool(True),
+	  cut_v_apply = cms.bool(False),
 	  cut_v_a = cms.double(-1.07),
 	  cut_v_c = cms.double(0.),
 	  cut_v_si = cms.double(0.15),
@@ -164,20 +164,20 @@ config = cms.PSet(
 
     y_alignment = cms.PSet(
       rp_L_1_F = cms.PSet(
-        x_min = cms.double(45.3),
-        x_max = cms.double(49.0),
+        x_min = cms.double(4.0),
+        x_max = cms.double(14.0),
       ),
       rp_L_1_N = cms.PSet(
-        x_min = cms.double(7.3),
-        x_max = cms.double(11.0),
+        x_min = cms.double(4.5),
+        x_max = cms.double(14.5),
       ),
       rp_R_1_N = cms.PSet(
-        x_min = cms.double(6.3),
-        x_max = cms.double(9.0),
+        x_min = cms.double(0),
+        x_max = cms.double(0),
       ),
       rp_R_1_F = cms.PSet(
-        x_min = cms.double(45.3),
-        x_max = cms.double(48.5),
+        x_min = cms.double(4.),
+        x_max = cms.double(13.0),
       )
     ),
 
@@ -203,8 +203,14 @@ config = cms.PSet(
 
 #----------------------------------------------------------------------------------------------------
 
-# TODO
-#def ApplyDefaultSettingsAlignmentSeptember():
+def ApplyDefaultSettingsAlignmentSeptember():
+  config.sector_45.cut_h_a = cms.double(-1)
+  config.sector_45.cut_h_c = cms.double(+0.33)
+  config.sector_45.cut_h_si = cms.double(0.2)
+
+  config.sector_45.cut_v_a = cms.double(-1.13)
+  config.sector_45.cut_v_c = cms.double(-0.13)
+  config.sector_45.cut_v_si = cms.double(0.15)
 
 # TODO: if needed...
 #def ApplyDefaultSettings1():
