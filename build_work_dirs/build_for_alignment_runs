@@ -35,8 +35,12 @@ function GetOne()
 
 #----------------------------------------------------------------------------------------------------
 
-top_dir="../data/alig-version1" # only track based alignment
-eos_dir="/eos/cms/store/group/phys_pps/reconstruction/2016/alignment_run_September/version2"
+top_dir="../data/alig-version1"
+#eos_dir="/eos/cms/store/group/phys_pps/reconstruction/2016/alignment_run_September/version2" # only track based alignment
+#GetOne "5322" "140" "DS1" "10332\|10331\|10329\|10328\|10327"
+#GetOne "5322" "140" "DS2" "10326\|10325\|10324\|10322\|10323"
 
+top_dir="../data/alig-version2" # only track based alignment
+eos_dir="/eos/cms/store/group/phys_pps/reconstruction/2016/alignment_run_September/version3" # first full alignment
 GetOne "5322" "140" "DS1" "10332\|10331\|10329\|10328\|10327"
 GetOne "5322" "140" "DS2" "10326\|10325\|10324\|10322\|10323"

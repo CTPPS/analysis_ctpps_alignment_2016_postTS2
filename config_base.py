@@ -205,11 +205,11 @@ config = cms.PSet(
 
 def ApplyDefaultSettingsAlignmentSeptember():
   config.sector_45.cut_h_a = cms.double(-1)
-  config.sector_45.cut_h_c = cms.double(+0.33)
+  config.sector_45.cut_h_c = cms.double(0.)
   config.sector_45.cut_h_si = cms.double(0.2)
 
   config.sector_45.cut_v_a = cms.double(-1.13)
-  config.sector_45.cut_v_c = cms.double(-0.13)
+  config.sector_45.cut_v_c = cms.double(0.)
   config.sector_45.cut_v_si = cms.double(0.15)
 
 # TODO: if needed...
