@@ -1,6 +1,7 @@
 #include "config.h"
 #include "stat.h"
 #include "alignment_classes.h"
+#include "default_reference.h"
 
 #include "TFile.h"
 #include "TH1D.h"
@@ -121,13 +122,13 @@ void BuildStdDevProfile(TGraph *g_input, double x_shift, const SelectionRange &r
 //----------------------------------------------------------------------------------------------------
 
 void DoMatchMethodX(TGraph *g_test, const SelectionRange &r_test, TGraph *g_ref, const SelectionRange &r_ref, double sh_min, double sh_max,
-		double &result)
+		double &result, unsigned int n_bins)
 {
 	printf("        test range: %.3f to %.3f\n", r_test.x_min, r_test.x_max);
 	printf("        ref range: %.3f to %.3f\n", r_ref.x_min, r_ref.x_max);
 
 	// prepare reference histogram
-	TH1D *h_ref = new TH1D("h_ref", ";x", 140, 2., 16.);
+	TH1D *h_ref = new TH1D("h_ref", ";x", n_bins, 2., 16.);
 	BuildHistogram(g_ref, 0., r_ref, h_ref);
 
 	// book match-quality graphs
@@ -243,15 +244,20 @@ void DoMatchMethodX(TGraph *g_test, const SelectionRange &r_test, TGraph *g_ref,
 		S_ref += v_ref;
 	}
 
-	h_ref->Scale(1./S_ref);
-	h_test->Scale(1./S_test);
-	h_test_aft->Scale(1./S_test);
+	if (S_ref > 0. && S_test > 0.)
+	{
+		h_ref->Scale(1./S_ref);
+		h_test->Scale(1./S_test);
+		h_test_aft->Scale(1./S_test);
 
-	TCanvas *c_cmp = new TCanvas("c_cmp");
-	h_ref->SetLineColor(1); h_ref->SetName("h_ref_sel"); h_ref->Draw("");
-	h_test->SetLineColor(6); h_test->SetName("h_test_bef"); h_test->Draw("same");
-	h_test_aft->SetLineColor(2); h_test_aft->SetName("h_test_aft"); h_test_aft->Draw("same");
-	c_cmp->Write();
+		TCanvas *c_cmp = new TCanvas("c_cmp");
+		h_ref->SetLineColor(1); h_ref->SetName("h_ref_sel"); h_ref->Draw("");
+		h_test->SetLineColor(6); h_test->SetName("h_test_bef"); h_test->Draw("same");
+		h_test_aft->SetLineColor(2); h_test_aft->SetName("h_test_aft"); h_test_aft->Draw("same");
+		c_cmp->Write();
+	
+		delete c_cmp;
+	}
 
 	// save graphs
 	g_n_bins->Write();
@@ -271,7 +277,6 @@ void DoMatchMethodX(TGraph *g_test, const SelectionRange &r_test, TGraph *g_ref,
 	delete h_ref;
 	delete h_test;
 	delete h_test_aft;
-	delete c_cmp;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -281,6 +286,7 @@ void DoMatchMethodY(TGraph *g_test, const SelectionRange &r_test, TGraph *g_ref,
 {
 	printf("        test range: %.3f to %.3f\n", r_test.x_min, r_test.x_max);
 	printf("        ref range: %.3f to %.3f\n", r_ref.x_min, r_ref.x_max);
+	printf("        shift range: %.3f to %.3f\n", sh_min, sh_max);
 
 	// prepare reference histogram
 	TH1D *h_ref = new TH1D("h_ref", ";x", 140, 2., 16.);
@@ -394,32 +400,6 @@ void DoMatchMethodY(TGraph *g_test, const SelectionRange &r_test, TGraph *g_ref,
 }
 
 //----------------------------------------------------------------------------------------------------
-
-void DoMatch(unsigned int /*rpId*/,
-		TGraph *g_test, const SelectionRange &r_test, TGraph *g_ref, const SelectionRange &r_ref,
-		double sh_min, double sh_max,
-		double &r_method_x, double &r_method_y)
-{
-	TDirectory *d_top = gDirectory;
-
-	// method x
-	r_method_x = 0.;
-	/*
-	gDirectory = d_top->mkdir("method x");
-	printf("    method x\n");
-	SelectionRange r_test_x = r_test;
-	DoMatchMethodX(g_test, r_test_x, g_ref, r_ref, sh_min, sh_max, r_method_x);
-	*/
-
-	// method y
-	gDirectory = d_top->mkdir("method y");
-	printf("    method y\n");
-	DoMatchMethodY(g_test, r_test, g_ref, r_ref, sh_min, sh_max, r_method_y);
-
-	gDirectory = d_top;
-}
-
-//----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
 int main()
@@ -436,20 +416,18 @@ int main()
 	printf("--------------------------------------------------\n");
 
 	// list of RPs and their settings
-	// TODO: remove unused data?
 	struct RPData
 	{
 		string name;
 		unsigned int id;
-		double sh_min, sh_max;	// in mm
-		double x_cut_off;		// in mm
+		string sectorName;
 	};
 
 	vector<RPData> rpData = {
-		{ "L_1_F", 3,   -70, 0, 130 },
-		{ "L_1_N", 2,   -10, 0, 130 },
-		//{ "R_1_N", 102, -10, 0, 130 },
-		//{ "R_1_F", 103, -70, 0, 130 }
+		{ "L_1_F", 3,  "sector 45" },
+		{ "L_1_N", 2,   "sector 45" },
+		{ "R_1_N", 102, "sector 56" },
+		{ "R_1_F", 103, "sector 56" }
 	};
 
 	// get input
@@ -462,14 +440,17 @@ int main()
 	AlignmentResultsCollection results;
 
 	// processing
-	for (const auto &ref : cfg.matching_1d_reference_datasets)
+	for (auto &ref : cfg.matching_reference_datasets)
 	{
+		if (ref == "default")
+			ref = GetDefaultReference(cfg.fill, cfg.xangle, cfg.beta);
+
 		printf("-------------------- reference dataset: %s\n", ref.c_str());
 
 		const string &ref_tag = ReplaceAll(ref, "/", "_");
 		TDirectory *ref_dir = f_out->mkdir(ref_tag.c_str());
 	
-		const string ref_path = "../../../../" + ref;
+		const string ref_path = "../../../../../" + ref;
 		TFile *f_ref = TFile::Open((ref_path + "/distributions.root").c_str());
 
 		Config cfg_ref;
@@ -481,19 +462,50 @@ int main()
 
 			TDirectory *rp_dir = ref_dir->mkdir(rpd.name.c_str());
 			
-			TGraph *g_ref = (TGraph *) f_ref->Get(("after selection/g_y_vs_x_" + rpd.name + "_sel").c_str());
-			TGraph *g_test = (TGraph *) f_in->Get(("after selection/g_y_vs_x_" + rpd.name + "_sel").c_str());
+			TGraph *g_ref = (TGraph *) f_ref->Get((rpd.sectorName + "/after selection/" + rpd.name + "/g_y_vs_x").c_str());
+			TGraph *g_test = (TGraph *) f_in->Get((rpd.sectorName + "/after selection/" + rpd.name + "/g_y_vs_x").c_str());
 
-			gDirectory = rp_dir;
-			double r_method_x = 0., r_method_y = 0.;
-			const auto &shift_range = cfg.matching_1d_shift_ranges[rpd.id];
-			DoMatch(rpd.id,
-				g_test, cfg.matching_1d_ranges[rpd.id],
-				g_ref, cfg_ref.matching_1d_ranges[rpd.id],
-				shift_range.x_min, shift_range.x_max,
-				r_method_x, r_method_y);
-		
+			if (g_ref == NULL || g_test == NULL)
+			{
+				printf("    cannot load data, skipping\n");
+				continue;
+			}
+
+			if (g_ref->GetN() < 100 || g_test->GetN() < 100)
+			{
+				printf("    too little input data, skipping\n");
+				continue;
+			}
+
+			const auto &shift_range = cfg.matching_shift_ranges[rpd.id];
+
+			// run method x
+			/*
+			gDirectory = rp_dir->mkdir("method x");
+			printf("    method x\n");
+
+			const auto &range_test_x = cfg.alignment_x_meth_x_ranges[rpd.id];
+			const auto &range_ref_x = cfg_ref.alignment_x_meth_x_ranges[rpd.id];
+
+			// TODO: why this ?
+			const unsigned int bin_number = (rpd.id == 23 || rpd.id == 123) ? 98 : 140;
+
+			double r_method_x = 0.;
+			DoMatchMethodX(g_test, range_test_x, g_ref, range_ref_x, shift_range.x_min, shift_range.x_max, r_method_x, bin_number);
+
 			results[ref + ", method x"][rpd.id] = AlignmentResult(r_method_x);
+			*/
+
+			// run method y
+			gDirectory = rp_dir->mkdir("method y");
+			printf("    method y\n");
+
+			const auto &range_test_y = cfg.alignment_x_meth_y_ranges[rpd.id];
+			const auto &range_ref_y = cfg_ref.alignment_x_meth_y_ranges[rpd.id];
+
+			double r_method_y = 0.;
+			DoMatchMethodY(g_test, range_test_y, g_ref, range_ref_y, shift_range.x_min, shift_range.x_max, r_method_y);
+
 			results[ref + ", method y"][rpd.id] = AlignmentResult(r_method_y);
 		}
 		

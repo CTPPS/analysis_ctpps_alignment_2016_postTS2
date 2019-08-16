@@ -1,0 +1,98 @@
+#!/bin/bash
+
+n_threads="17"
+
+programs=(
+	#"distributions"
+
+	#"match"
+	#"x_alignment_meth_o"
+	#"x_alignment_relative"
+
+	"y_alignment"
+	#"y_alignment_alt"
+)
+
+#input_spec="data/phys-version1/fill_*/xangle_*/ALL/"
+#input_spec="data/phys-version1/fill_*/xangle_160_beta_*/ALL/"
+input_spec="data/phys-version1/fill_*/xangle_130_beta_*/ALL/"
+#input_spec="data/phys-version1/fill_*/xangle_160_beta_0.30/ALL/"
+
+#----------------------------------------------------------------------------------------------------
+
+function ProcessOne()
+{
+	local idx="$1"
+	local buffer="$2"
+
+	cwd="`pwd -P`"
+
+	for entry in $buffer
+	do
+		local program="${entry%|*}"
+		local dir="${entry#*|}"
+
+		#echo "* thread $idx: $program, $dir"
+
+		cd "$dir"
+	
+		label="thread $idx, $program in $dir"
+
+		"$cwd/$program" &> "$program.log"
+		if [ $? -ne 0 ]
+		then
+			echo "* $label: run error"
+		else
+			echo "* $label: done"
+		fi
+
+		cd - &> /dev/null
+	done
+}
+
+#----------------------------------------------------------------------------------------------------
+
+# build all programs
+make || exit 1
+
+echo "* collecting input"
+
+# collect input
+idx=0
+input=()
+for dir in $input_spec
+do
+	fill=${dir#*fill_}
+	fill=${fill%%/*}
+
+	skip="1"
+	if [ "$fill" == "6611" -o "$fill" == "6639" -o "$fill" == "6675" -o "$fill" == "6774" -o "$fill" == "6901" -o "$fill" == "7052" -o "$fill" == "7139" -o "$fill" == "7218" -o "$fill" == "7334" ]
+	then
+		skip="0"
+	fi
+
+	skip="0"
+
+	if [ "$skip" == "1" ]
+	then
+		continue
+	fi
+
+	for program in ${programs[*]}
+	do
+		input[$idx]="${input[$idx]} $program|$dir"
+		idx=$(( (idx+1) % n_threads ))
+	done
+done
+
+echo "* running"
+
+# run in parallel
+for (( idx=0; idx<n_threads; idx++))
+do
+	ProcessOne $idx "${input[$idx]}" &
+done
+
+wait
+
+echo "* all done"

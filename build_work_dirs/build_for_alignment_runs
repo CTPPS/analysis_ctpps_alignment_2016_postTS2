@@ -15,21 +15,15 @@ function GetOne()
 	input_files=""
 	for f in `eos ls "$eos_dir"|grep "$search"|grep ".root"`
 	do
-		if [ -n "$input_files" ]
-		then
-			input_files="$input_files,\n"
-		fi
-
-		input_files="${input_files}    \"root://eostotem.cern.ch/${eos_dir}/${f}\""
+		input_files="${input_files}input_files.append(\"root://eostotem.cern.ch/${eos_dir}/${f}\")\n"
 	done
 
 	# make config with input files
 	(
 		echo "import FWCore.ParameterSet.Config as cms"
 		echo ""
-		echo "input_files = cms.vstring("
+		echo "input_files = cms.vstring()"
 		echo -e "$input_files"
-		echo ")"
 	) > "$dir/input_files.py"
 
 	# if not present, make (default) config
@@ -41,7 +35,8 @@ function GetOne()
 
 #----------------------------------------------------------------------------------------------------
 
-top_dir="../data/alig"
+top_dir="../data/alig-version1" # only track based alignment
+eos_dir="/eos/cms/store/group/phys_pps/reconstruction/2016/alignment_run_September/version2"
 
-#eos_dir="/eos/totem/data/ctpps/reconstruction/2017/alignment_run_September/version2"
-#GetOne "6228" "150" "DS1" "run_303652"
+GetOne "5322" "140" "DS1" "10332\|10331\|10329\|10328\|10327"
+GetOne "5322" "140" "DS2" "10326\|10325\|10324\|10322\|10323"
