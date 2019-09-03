@@ -104,9 +104,10 @@ TGraphErrors* BuildGraphFromDirectory(TDirectory *dir, bool aligned, unsigned in
 
 		if (aligned)
 		{
-			y_cen += ((rpId < 100) ? -0.2 : -0.4);
+			y_cen += ((rpId < 100) ? 0.0 : 0.0);
+			y_width *= ((rpId < 100) ? 1.1 : 1.0);
 		} else {
-			y_cen += ((rpId < 100) ? -0.3 : -0.8);
+			y_cen += ((rpId < 100) ? 0.0 : 0.0);
 			y_width *= ((rpId < 100) ? 1.1 : 1.0);
 		}
 
@@ -285,10 +286,10 @@ int main()
 	};
 
 	vector<RPData> rpData = {
-		{ "L_2_F", 23,  "sector 45", "F" },
-		{ "L_1_F", 3,   "sector 45", "N" },
-		{ "R_1_F", 103, "sector 56", "N" },
-		{ "R_2_F", 123, "sector 56", "F" }
+		{ "L_1_F", 3,   "sector 45", "F" },
+		{ "L_1_N", 2,   "sector 45", "N" },
+		{ "R_1_N", 102, "sector 56", "N" },
+		{ "R_1_F", 103, "sector 56", "F" }
 	};
 
 	// get input

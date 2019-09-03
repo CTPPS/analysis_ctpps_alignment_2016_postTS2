@@ -1,21 +1,18 @@
 import root;
 import pad_layout;
 
-string topDir = "../../";
+include "../common.asy";
 
-//string dataset = "period1_physics/fill_4964";
-//string dataset = "period1_physics/fill_5024";
-//string dataset = "period1_physics/fill_5052";
-string dataset = "period1_physics/fill_5267";
+string topDir = "../../data/phys-version1/";
 
-string reference = "10077";
+string reference = reference_std;
+string dataset = datasets_std[1];
 
-string rps[] = {
-	"L_1_F",
-	"L_1_N",
-	"R_1_N",
-	"R_1_F",
-};
+string rps[], rp_labels[];
+rps.push("L_2_F"); rp_labels.push("L-220-fr");
+rps.push("L_1_F"); rp_labels.push("L-210-fr");
+rps.push("R_1_F"); rp_labels.push("R-210-fr");
+rps.push("R_2_F"); rp_labels.push("R-220-fr");
 
 xSizeDef = 7cm;
 ySizeDef = 5cm;
@@ -28,10 +25,7 @@ label(replace(dataset, "_", "\_"));
 NewRow();
 
 for (int rpi : rps.keys)
-{
-	NewPad(false);
-	label("{\SetFontSizesXX " + replace(rps[rpi], "_", "\_") + "}");
-}
+	NewPadLabel(rp_labels[rpi]);
 
 NewRow();
 
@@ -41,7 +35,7 @@ for (int rpi : rps.keys)
 	currentpad.xTicks = LeftTicks(2., 1.);
 	//currentpad.yTicks = RightTicks(0.5, 0.1);
 
-	string p_base = rps[rpi] + "/" + reference + "/method x/c_cmp|";
+	string p_base = reference + "/" + rps[rpi] + "/method x/c_cmp|";
 	draw(RootGetObject(topDir + dataset+"/match.root", p_base + "h_ref_sel"), "d0,eb", black);
 	draw(RootGetObject(topDir + dataset+"/match.root", p_base + "h_test_bef"), "d0,eb", blue);
 	draw(RootGetObject(topDir + dataset+"/match.root", p_base + "h_test_aft"), "d0,eb", red);
@@ -58,7 +52,7 @@ for (int rpi : rps.keys)
 {
 	NewPad("shift$\ung{mm}$", "bins in overlap");
 	
-	string p_base = rps[rpi] + "/" + reference + "/method x";
+	string p_base = reference + "/" + rps[rpi] + "/method x";
 
 	RootGetObject(topDir + dataset+"/match.root", p_base + "/g_results");
 	real ax[] = { 0. };
@@ -68,10 +62,12 @@ for (int rpi : rps.keys)
 
 	draw(RootGetObject(topDir + dataset+"/match.root", p_base + "/g_n_bins"), "p", magenta, mCi+1pt+magenta);
 
-	limits((-5, 0), (+0, 80), Crop);
+	//limits((-5, 0), (+0, 80), Crop);
+	/*
 	yaxis(XEquals(sh_best - sh_best_unc, false), dashed);
 	yaxis(XEquals(sh_best, false), solid);
 	yaxis(XEquals(sh_best + sh_best_unc, false), dashed);
+	*/
 }
 
 NewRow();
@@ -80,7 +76,7 @@ for (int rpi : rps.keys)
 {
 	NewPad("shift$\ung{mm}$", "$S^2 / N$");
 	
-	string p_base = rps[rpi] + "/" + reference + "/method x";
+	string p_base = reference + "/" + rps[rpi] + "/method x";
 
 	RootGetObject(topDir + dataset+"/match.root", p_base + "/g_results");
 	real ax[] = { 0. };
@@ -91,10 +87,12 @@ for (int rpi : rps.keys)
 	draw(RootGetObject(topDir + dataset+"/match.root", p_base + "/g_chi_sq_norm"), "p", heavygreen, mCi+1pt+heavygreen);
 
 	//limits((-5, 0), (+0, 200), Crop);
-	xlimits(-5, 0, Crop);
+	//xlimits(-5, 0, Crop);
+	/*
 	yaxis(XEquals(sh_best - sh_best_unc, false), dashed);
 	yaxis(XEquals(sh_best, false), solid);
 	yaxis(XEquals(sh_best + sh_best_unc, false), dashed);
+	*/
 
 	AddToLegend(format("%.2f", sh_best), black);
 	AttachLegend();

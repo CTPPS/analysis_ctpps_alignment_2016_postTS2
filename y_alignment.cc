@@ -52,14 +52,6 @@ TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int /
 
 	double y_max_fit = 10.;
 
-	// TODO: needed?
-	/*
-	if (rp ==  23) y_max_fit = 3.0 + ((aligned) ? 0. : 3.7);
-	if (rp ==   3) y_max_fit = 3.0 + ((aligned) ? 0. : 3.8);
-	if (rp == 103) y_max_fit = 3.0 + ((aligned) ? 0. : 3.2);
-	if (rp == 123) y_max_fit = 3.0 + ((aligned) ? 0. : 3.1);
-	*/
-
 	TGraphErrors *g_y_mode_vs_x = new TGraphErrors();
 
 	for (int bix = 1; bix <= h2_y_vs_x->GetNbinsX(); ++bix)
@@ -100,7 +92,7 @@ TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int /
 		if (saveDetails)
 			printf("    init : mu = %.2f, si = %.2f\n", ff_fit->GetParameter(1), ff_fit->GetParameter(2));
 
-		double x_min = 2., x_max = y_max_fit;
+		double x_min = -2., x_max = +3.;
 		if (aligned)
 			x_min = -2., x_max = +3.;
 
@@ -110,11 +102,11 @@ TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int /
 			printf("    fit 1: mu = %.2f, si = %.2f\n", ff_fit->GetParameter(1), ff_fit->GetParameter(2));
 
 		ff_fit->ReleaseParameter(4);
-		double w = min(4., 2. * ff_fit->GetParameter(2));
+		double w = max(0.5, min(4., 2. * ff_fit->GetParameter(2)));
 		x_min = ff_fit->GetParameter(1) - w;
 		x_max = min(y_max_fit, ff_fit->GetParameter(1) + w);
 		if (saveDetails)
-			printf("        x_min = %.3f, x_max = %.3f\n", x_min, x_max);
+			printf("    x_min = %.3f, x_max = %.3f\n", x_min, x_max);
 		h_y->Fit(ff_fit, "Q", "", x_min, x_max);
 
 		if (saveDetails)
@@ -131,9 +123,9 @@ TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int /
 		const double y_mode_sys_unc = 0.030;
 		double y_mode_unc = sqrt(y_mode_fit_unc*y_mode_fit_unc + y_mode_sys_unc*y_mode_sys_unc);
 
-		const double chiSqThreshold = (aligned) ? 1000. : 50.;
+		const double chiSqThreshold = (aligned) ? 1000. : 1000.;
 
-		const bool valid = ! (fabs(y_mode_unc) > 5. || fabs(y_mode) > 20. || ff_fit->GetChisquare() / ff_fit->GetNDF() > chiSqThreshold);
+		const bool valid = ! (fabs(y_mode_unc) > 1. || fabs(y_mode) > 1. || ff_fit->GetChisquare() / ff_fit->GetNDF() > chiSqThreshold);
 
 		if (saveDetails)
 			printf("    y_mode = %.3f, valid = %u\n", y_mode, valid);
@@ -189,10 +181,10 @@ int main()
 
 	// TODO
 	vector<RPData> rpData = {
-		{ "L_1_F",   3, "sector 45", 0.17, -3. },
-		{ "L_1_N",   2, "sector 45", 0.18, -3. },
+		{ "L_1_F",   3, "sector 45", 0., -3. },
+		{ "L_1_N",   2, "sector 45", 0., -3. },
 		//{ "R_1_N", 102, "sector 56", 0.34, -3. },
-		{ "R_1_F", 103, "sector 56", 0.34, -3. }
+		{ "R_1_F", 103, "sector 56", 0., -3. }
 	};
 
 	// get input

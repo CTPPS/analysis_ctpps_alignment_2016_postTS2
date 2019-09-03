@@ -191,9 +191,6 @@ SectorData::SectorData(const string _name, unsigned int _rpIdUp, unsigned int _r
 	const double bin_size_x = 142.3314E-3; // mm
 	const unsigned int n_bins_x = 210;
 
-	const double pixel_x_offset = (cfg.aligned) ? 0. : 40.;
-
-	const double x_min_pix = pixel_x_offset, x_max_pix = pixel_x_offset + n_bins_x * bin_size_x;
 	const double x_min_str = 0., x_max_str = n_bins_x * bin_size_x;
 
 	const unsigned int n_bins_y = 400;
@@ -201,13 +198,13 @@ SectorData::SectorData(const string _name, unsigned int _rpIdUp, unsigned int _r
 
 	// hit distributions
 	m_h1_x_bef_sel[rpIdUp] = new TH1D("", ";x", 10*n_bins_x, x_min_str, x_max_str);
-	m_h1_x_bef_sel[rpIdDw] = new TH1D("", ";x", 10*n_bins_x, x_min_pix, x_max_pix);
+	m_h1_x_bef_sel[rpIdDw] = new TH1D("", ";x", 10*n_bins_x, x_min_str, x_max_str);
 
 	m_h2_y_vs_x_bef_sel[rpIdUp] = new TH2D("", ";x;y", n_bins_x, x_min_str, x_max_str, n_bins_y, y_min, y_max);
-	m_h2_y_vs_x_bef_sel[rpIdDw] = new TH2D("", ";x;y", n_bins_x, x_min_pix, x_max_pix, n_bins_y, y_min, y_max);
+	m_h2_y_vs_x_bef_sel[rpIdDw] = new TH2D("", ";x;y", n_bins_x, x_min_str, x_max_str, n_bins_y, y_min, y_max);
 
 	m_h2_y_vs_x_aft_sel[rpIdUp] = new TH2D("", ";x;y", n_bins_x, x_min_str, x_max_str, n_bins_y, y_min, y_max);
-	m_h2_y_vs_x_aft_sel[rpIdDw] = new TH2D("", ";x;y", n_bins_x, x_min_pix, x_max_pix, n_bins_y, y_min, y_max);
+	m_h2_y_vs_x_aft_sel[rpIdDw] = new TH2D("", ";x;y", n_bins_x, x_min_str, x_max_str, n_bins_y, y_min, y_max);
 
 	m_g_y_vs_x_aft_sel[rpIdUp] = new TGraph();
 	m_g_y_vs_x_aft_sel[rpIdDw] = new TGraph();
@@ -215,8 +212,8 @@ SectorData::SectorData(const string _name, unsigned int _rpIdUp, unsigned int _r
 	// cut plots
 	h_q_cut_h_bef = new TH1D("", ";cq_h", 400, -2., 2.);
 	h_q_cut_h_aft = new TH1D("", ";cq_h", 400, -2., 2.);
-	h2_cut_h_bef = new TH2D("", ";x_up;x_dw", n_bins_x, x_min_str, x_max_str, n_bins_x, x_min_pix, x_max_pix);
-	h2_cut_h_aft = new TH2D("", ";x_up;x_dw", n_bins_x, x_min_str, x_max_str, n_bins_x, x_min_pix, x_max_pix);
+	h2_cut_h_bef = new TH2D("", ";x_up;x_dw", n_bins_x, x_min_str, x_max_str, n_bins_x, x_min_str, x_max_str);
+	h2_cut_h_aft = new TH2D("", ";x_up;x_dw", n_bins_x, x_min_str, x_max_str, n_bins_x, x_min_str, x_max_str);
 	p_cut_h_aft = new TProfile("", ";x_up;mean of x_dw", n_bins_x, x_min_str, x_max_str);
 
 	h_q_cut_v_bef = new TH1D("", ";cq_v", 400, -2., 2.);
@@ -289,7 +286,7 @@ unsigned int SectorData::Process(const vector<CTPPSLocalTrackLite> &tracks)
 	// for sector 56, add a fake upstream track so as the code below can still work
 	if (name == "sector 56")
 	{
-		tracksUp.emplace_back(0, 0., 0., 0., 0.,
+		tracksUp.emplace_back(0, 1E6, 0., 1E6, 0.,
 			0., 0., 0., 0., 0., (CTPPSpixelLocalTrackReconstructionInfo)0, 0, 0., 0.);
 	}
 

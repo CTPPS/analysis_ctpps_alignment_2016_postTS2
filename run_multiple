@@ -6,17 +6,15 @@ programs=(
 	#"distributions"
 
 	#"match"
-	#"x_alignment_meth_o"
+	"x_alignment_meth_o"
 	#"x_alignment_relative"
 
-	"y_alignment"
+	#"y_alignment"
 	#"y_alignment_alt"
 )
 
-#input_spec="data/phys-version1/fill_*/xangle_*/ALL/"
-#input_spec="data/phys-version1/fill_*/xangle_160_beta_*/ALL/"
-input_spec="data/phys-version1/fill_*/xangle_130_beta_*/ALL/"
-#input_spec="data/phys-version1/fill_*/xangle_160_beta_0.30/ALL/"
+input_spec="data/phys-version1/fill_*/xangle_*/ALL/"
+#input_spec="data/phys-version1/fill_*/xangle_130_beta_*/ALL/"
 
 #----------------------------------------------------------------------------------------------------
 
@@ -65,11 +63,11 @@ do
 	fill=${dir#*fill_}
 	fill=${fill%%/*}
 
-	skip="1"
-	if [ "$fill" == "6611" -o "$fill" == "6639" -o "$fill" == "6675" -o "$fill" == "6774" -o "$fill" == "6901" -o "$fill" == "7052" -o "$fill" == "7139" -o "$fill" == "7218" -o "$fill" == "7334" ]
-	then
-		skip="0"
-	fi
+	#skip="1"
+	#if [ "$fill" == "6611" -o "$fill" == "6639" -o "$fill" == "6675" -o "$fill" == "6774" -o "$fill" == "6901" -o "$fill" == "7052" -o "$fill" == "7139" -o "$fill" == "7218" -o "$fill" == "7334" ]
+	#then
+	#	skip="0"
+	#fi
 
 	skip="0"
 

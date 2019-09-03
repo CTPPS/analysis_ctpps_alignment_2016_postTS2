@@ -18,7 +18,7 @@ using namespace std;
 
 int main()
 {
-	bool useAuxFits = true;
+	bool useAuxFits = false;
 
 	// load config
 	if (cfg.LoadFrom("config.py") != 0)
@@ -41,9 +41,10 @@ int main()
 		double sh_x_N;
 	};
 
+	// TODO
 	vector<SectorData> sectorData = {
-		{ "sector 45",   3,  23, "L_1_F", "L_2_F", (cfg.xangle == 160) ? +0.006 : +0.008, -3.6 },
-		{ "sector 56", 103, 123, "R_1_F", "R_2_F", (cfg.xangle == 160) ? -0.015 : -0.012, -2.8 }
+		{ "sector 45",   2,   3, "L_1_N", "L_1_F", -0.008, -3. },
+		{ "sector 56", 102, 103, "R_1_N", "R_1_F", +0.000, -3. }
 	};
 
 	// get input

@@ -1,39 +1,40 @@
 import root;
 import pad_layout;
-include "../fills_samples.asy";
 
-string topDir = "../../";
+include "../common.asy";
+
+string topDir = "../../data/phys/";
+
+include "../fills_samples.asy";
+InitDataSets();
 
 //----------------------------------------------------------------------------------------------------
-
-InitDataSets();
 
 string sample_labels[];
 pen sample_pens[];
 sample_labels.push("ZeroBias"); sample_pens.push(blue);
-sample_labels.push("DoubleEG"); sample_pens.push(red);
+sample_labels.push("EGamma"); sample_pens.push(red);
 sample_labels.push("SingleMuon"); sample_pens.push(heavygreen);
 
 real sfa = 0.3;
 
-string method = "method y";
+string method = "method x";
 
-int xangle = 120;
-string ref_label = "data_alig_fill_5685_xangle_120_DS1";
-//int xangle = 150;
-//string ref_label = "data_alig_fill_5685_xangle_150_DS1";
+string xangle = "160";
+string beta = "0.30";
+string ref_label = "data_alig_fill_6554_xangle_160_beta_0.30_DS1";
 
 int rp_ids[];
 string rps[], rp_labels[];
 real rp_shift_m[];
-rp_ids.push(3); rps.push("L_2_F"); rp_labels.push("45-220-fr"); rp_shift_m.push(-42.05);
-rp_ids.push(2); rps.push("L_1_F"); rp_labels.push("45-210-fr"); rp_shift_m.push(-3.7);
-rp_ids.push(102); rps.push("R_1_F"); rp_labels.push("56-210-fr"); rp_shift_m.push(-2.75);
-rp_ids.push(103); rps.push("R_2_F"); rp_labels.push("56-220-fr"); rp_shift_m.push(-42.05);
+rp_ids.push(23); rps.push("L_2_F"); rp_labels.push("L-220-fr"); rp_shift_m.push(-42.05);
+rp_ids.push(3); rps.push("L_1_F"); rp_labels.push("L-210-fr"); rp_shift_m.push(-3.7);
+rp_ids.push(103); rps.push("R_1_F"); rp_labels.push("R-210-fr"); rp_shift_m.push(-2.75);
+rp_ids.push(123); rps.push("R_2_F"); rp_labels.push("R-220-fr"); rp_shift_m.push(-42.05);
 
 yTicksDef = RightTicks(0.2, 0.1);
 
-xSizeDef = 40cm;
+xSizeDef = x_size_fill_cmp;
 
 //----------------------------------------------------------------------------------------------------
 
@@ -53,8 +54,9 @@ xTicksDef = LeftTicks(rotate(90)*Label(""), TickLabels, Step=1, step=0);
 
 NewPad(false, 1, 1);
 
-AddToLegend("(" + method + ")");
-AddToLegend(format("(xangle %u)", xangle));
+AddToLegend("method = " + method);
+AddToLegend("xangle = " + xangle);
+AddToLegend("beta = " + beta);
 
 for (int sai : sample_labels.keys)
 {
@@ -72,17 +74,6 @@ for (int rpi : rps.keys)
 	NewRow();
 
 	NewPad("fill", "horizontal shift$\ung{mm}$");
-
-	if (rp_shift_m[rpi] != 0)
-	{
-		real sh = rp_shift_m[rpi], unc = 0.15;
-		real fill_min = -1, fill_max = fill_data.length;
-		draw((fill_min, sh+unc)--(fill_max, sh+unc), black+dashed);
-		draw((fill_min, sh)--(fill_max, sh), black+1pt);
-		draw((fill_min, sh-unc)--(fill_max, sh-unc), black+dashed);
-		draw((fill_max, sh-2*unc), invisible);
-		draw((fill_max, sh+2*unc), invisible);
-	}
 	
 	for (int fdi : fill_data.keys)
 	{
@@ -96,6 +87,9 @@ for (int rpi : rps.keys)
 			if (fill_data[fdi].datasets[dsi].xangle != xangle)
 				continue;
 
+			if (fill_data[fdi].datasets[dsi].beta != beta)
+				continue;
+
 			string dataset = fill_data[fdi].datasets[dsi].tag;
 
 			write("        " + dataset);
@@ -104,7 +98,7 @@ for (int rpi : rps.keys)
 	
 			for (int sai : sample_labels.keys)
 			{
-				string f = topDir + "data/phys/" + dataset + "/" + sample_labels[sai] + "/match.root";	
+				string f = topDir + dataset + "/" + sample_labels[sai] + "/match.root";	
 				RootObject obj = RootGetObject(f, ref_label + "/" + rps[rpi] + "/" + method + "/g_results", error = false);
 	
 				if (!obj.valid)
@@ -117,7 +111,7 @@ for (int rpi : rps.keys)
 
 				real x = fdi + sai * sfa / (sample_labels.length - 1) - sfa/2;
 
-				bool pointValid = (fabs(bsh) > 0.01);
+				bool pointValid = (bsh == bsh && bsh_unc == bsh_unc && fabs(bsh) > 0.01);
 	
 				pen p = sample_pens[sai];
 	
@@ -130,7 +124,11 @@ for (int rpi : rps.keys)
 		}
 	}
 
-	xlimits(-1, fill_data.length, Crop);
+	real y_mean = GetMeanHorizontalAlignment(rps[rpi]);
+	draw((-1, y_mean)--(fill_data.length, y_mean), black);
+
+	//xlimits(-1, fill_data.length, Crop);
+	limits((-1, y_mean-1), (fill_data.length, y_mean+1), Crop);
 
 	AttachLegend("{\SetFontSizesXX " + rp_labels[rpi] + "}");
 }

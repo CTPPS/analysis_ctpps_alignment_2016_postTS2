@@ -1,0 +1,14 @@
+#!/bin/bash
+
+for d in alignment_*
+do
+	cd $d
+
+	for f in *.asy
+	do
+		echo "* $d/$f"
+		asy "$f" &> /dev/null
+	done
+
+	cd - &> /dev/null
+done
