@@ -288,8 +288,8 @@ int main()
 	vector<RPData> rpData = {
 		{ "L_1_F", 3,   "sector 45", "F" },
 		{ "L_1_N", 2,   "sector 45", "N" },
-		{ "R_1_N", 102, "sector 56", "N" },
-		{ "R_1_F", 103, "sector 56", "F" }
+		//{ "R_1_N", 102, "sector 56", "N" },
+		//{ "R_1_F", 103, "sector 56", "F" }
 	};
 
 	// get input

@@ -480,21 +480,17 @@ int main()
 			const auto &shift_range = cfg.matching_shift_ranges[rpd.id];
 
 			// run method x
-			/*
 			gDirectory = rp_dir->mkdir("method x");
 			printf("    method x\n");
 
 			const auto &range_test_x = cfg.alignment_x_meth_x_ranges[rpd.id];
 			const auto &range_ref_x = cfg_ref.alignment_x_meth_x_ranges[rpd.id];
 
-			// TODO: why this ?
-			const unsigned int bin_number = (rpd.id == 23 || rpd.id == 123) ? 98 : 140;
-
+			const unsigned int bin_number = 140;
 			double r_method_x = 0.;
 			DoMatchMethodX(g_test, range_test_x, g_ref, range_ref_x, shift_range.x_min, shift_range.x_max, r_method_x, bin_number);
 
 			results[ref + ", method x"][rpd.id] = AlignmentResult(r_method_x);
-			*/
 
 			// run method y
 			gDirectory = rp_dir->mkdir("method y");

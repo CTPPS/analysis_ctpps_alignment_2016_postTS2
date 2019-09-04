@@ -28,6 +28,8 @@ AttachLegend();
 for (int rpi : rps.keys)
 	NewPadLabel(rp_labels[rpi]);
 
+//----------------------------------------------------------------------------------------------------
+
 for (int fi : fills_phys_short.keys)
 {
 	string fill = fills_phys_short[fi];

@@ -21,7 +21,9 @@ AddToLegend("version = " + version_phys);
 AddToLegend("sample = " + sample);
 
 for (int cfgi : cfg_xangles.keys)
+{
 	AddToLegend("xangle = " + cfg_xangles[cfgi] + ", beta = " + cfg_betas[cfgi], cfg_pens[cfgi]);
+}
 
 AttachLegend();
 

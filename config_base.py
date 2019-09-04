@@ -69,8 +69,8 @@ config = cms.PSet(
       reference_datasets = cms.vstring("default"),
 
       rp_L_1_F = cms.PSet(
-        sh_min = cms.double(-5),
-        sh_max = cms.double(-2)
+        sh_min = cms.double(-5.5),
+        sh_max = cms.double(-2.5)
       ),
       rp_L_1_N = cms.PSet(
         sh_min = cms.double(-5),
@@ -81,57 +81,38 @@ config = cms.PSet(
         sh_max = cms.double(-2)
       ),
       rp_R_1_F = cms.PSet(
-        sh_min = cms.double(-5),
-        sh_max = cms.double(-2)
+        sh_min = cms.double(-5.5),
+        sh_max = cms.double(-2.5)
       )
     ),
 
     x_alignment_meth_x = cms.PSet(
-      rp_L_1_F = cms.PSet(
-        x_min = cms.double(7),
-        x_max = cms.double(15),
-      ),
-      rp_L_1_N = cms.PSet(
-        x_min = cms.double(7),
-        x_max = cms.double(15.),
-      ),
-      rp_R_1_N = cms.PSet(
-        x_min = cms.double(0),
-        x_max = cms.double(0),
-      ),
-      rp_R_1_F = cms.PSet(
-        x_min = cms.double(7),
-        x_max = cms.double(15),
-      )
-    ),
-
-    x_alignment_meth_y = cms.PSet(
-      rp_L_1_F = cms.PSet(
-        x_min = cms.double(7),
-        x_max = cms.double(15),
-      ),
-      rp_L_1_N = cms.PSet(
-        x_min = cms.double(7),
-        x_max = cms.double(15.),
-      ),
-      rp_R_1_N = cms.PSet(
-        x_min = cms.double(0),
-        x_max = cms.double(0),
-      ),
-      rp_R_1_F = cms.PSet(
-        x_min = cms.double(7),
-        x_max = cms.double(15),
-      )
-    ),
-
-    x_alignment_meth_o = cms.PSet(
       rp_L_1_F = cms.PSet(
         x_min = cms.double(10),
         x_max = cms.double(16),
       ),
       rp_L_1_N = cms.PSet(
         x_min = cms.double(9),
-        x_max = cms.double(15.),
+        x_max = cms.double(15),
+      ),
+      rp_R_1_N = cms.PSet(
+        x_min = cms.double(0),
+        x_max = cms.double(0),
+      ),
+      rp_R_1_F = cms.PSet(
+        x_min = cms.double(8.8),
+        x_max = cms.double(15),
+      )
+    ),
+
+    x_alignment_meth_y = cms.PSet(
+      rp_L_1_F = cms.PSet(
+        x_min = cms.double(8),
+        x_max = cms.double(15),
+      ),
+      rp_L_1_N = cms.PSet(
+        x_min = cms.double(8),
+        x_max = cms.double(14.),
       ),
       rp_R_1_N = cms.PSet(
         x_min = cms.double(0),
@@ -139,6 +120,25 @@ config = cms.PSet(
       ),
       rp_R_1_F = cms.PSet(
         x_min = cms.double(7),
+        x_max = cms.double(10),
+      )
+    ),
+
+    x_alignment_meth_o = cms.PSet(
+      rp_L_1_F = cms.PSet(
+        x_min = cms.double(8.5),
+        x_max = cms.double(16),
+      ),
+      rp_L_1_N = cms.PSet(
+        x_min = cms.double(8.5),
+        x_max = cms.double(15.),
+      ),
+      rp_R_1_N = cms.PSet(
+        x_min = cms.double(0),
+        x_max = cms.double(0),
+      ),
+      rp_R_1_F = cms.PSet(
+        x_min = cms.double(5),
         x_max = cms.double(15),
       )
     ),
@@ -217,6 +217,27 @@ def ApplyDefaultSettingsAlignmentSeptember():
 
   config.sector_45.fr_x_slice_min = cms.double(2)
   config.sector_45.fr_x_slice_max = cms.double(14)
+
+
+  config.x_alignment_meth_x.rp_L_1_N.x_min = cms.double(2)
+  config.x_alignment_meth_x.rp_L_1_N.x_max = cms.double(20.)
+
+  config.x_alignment_meth_x.rp_L_1_F.x_min = cms.double(2.)
+  config.x_alignment_meth_x.rp_L_1_F.x_max = cms.double(20.)
+
+  config.x_alignment_meth_x.rp_R_1_F.x_min = cms.double(2.)
+  config.x_alignment_meth_x.rp_R_1_F.x_max = cms.double(20.)
+
+
+  config.x_alignment_meth_y.rp_L_1_N.x_min = cms.double(2)
+  config.x_alignment_meth_y.rp_L_1_N.x_max = cms.double(15.)
+
+  config.x_alignment_meth_y.rp_L_1_F.x_min = cms.double(2.)
+  config.x_alignment_meth_y.rp_L_1_F.x_max = cms.double(15.)
+
+  config.x_alignment_meth_y.rp_R_1_F.x_min = cms.double(2.)
+  config.x_alignment_meth_y.rp_R_1_F.x_max = cms.double(15.)
+
 
   config.x_alignment_meth_o.rp_L_1_N.x_min = cms.double(6)
   config.x_alignment_meth_o.rp_L_1_N.x_max = cms.double(15.)

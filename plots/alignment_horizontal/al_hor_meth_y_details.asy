@@ -49,7 +49,7 @@ for (int rpi : rps.keys)
 	draw(RootGetObject(f, p_base + "h_test_bef"), "d0,eb", blue);
 	draw(RootGetObject(f, p_base + "h_test_aft"), "d0,eb", red);
 
-	limits((2, 0), (15, 4), Crop);
+	limits((0, 0), (15, 4), Crop);
 }
 
 //----------------------------------------------------------------------------------------------------
