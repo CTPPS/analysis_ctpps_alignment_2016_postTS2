@@ -198,7 +198,7 @@ struct AlignmentResults : public std::map<unsigned int, AlignmentResult>
 
 //----------------------------------------------------------------------------------------------------
 
-struct AlignmentResultsCollection : public std::map<string, AlignmentResults>
+struct AlignmentResultsCollection : public std::map<std::string, AlignmentResults>
 {
 	int Write(const std::string &fn) const
 	{
