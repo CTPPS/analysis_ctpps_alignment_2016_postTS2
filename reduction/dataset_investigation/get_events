@@ -1,0 +1,37 @@
+#!/bin/bash
+
+pattern=""
+
+function GetOneRun()
+{
+	local run="$1"
+
+	(
+
+	for dataset in `dasgoclient --limit=0 --query "dataset dataset=$pattern"`
+	do
+		result=`dasgoclient --limit=0 --query "file dataset=$dataset run=$run | sum(file.nevents)"`
+		events="${result#*=}"
+		events="${events#*: }"
+
+		dataset_beg=${dataset#*/}
+		dataset_beg=${dataset_beg%%/*}
+
+		dataset_end=${dataset#*/}
+		dataset_end=${dataset_end#*/}
+
+		if [ -n "$events" ]
+		then
+			echo "$dataset_beg,$dataset_end,$events"
+		fi
+	done
+
+	) > "reco_info_$run" 2> /dev/null
+}
+
+
+pattern="/*/Run2016H-PromptReco-v2/AOD"
+GetOneRun "282735" &
+GetOneRun "283408" &
+GetOneRun "283877" &
+GetOneRun "284035" &

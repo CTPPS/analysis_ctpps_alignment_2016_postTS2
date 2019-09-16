@@ -1,0 +1,18 @@
+#!/bin/bash
+
+pattern=""
+
+function TestOne()
+{
+	for dataset in `dasgoclient --limit=0 --query "dataset dataset=$pattern"`
+	do
+		echo ""
+		echo "* $dataset"
+
+		dasgoclient --limit=0 --query "site dataset=$dataset"
+	done
+}
+
+
+pattern="/*/Run2016H-PromptReco-v2/AOD"
+TestOne
