@@ -18,7 +18,7 @@ using namespace std;
 
 int main()
 {
-	bool useAuxFits = false;
+	bool useAuxFits = true;
 
 	// load config
 	if (cfg.LoadFrom("config.py") != 0)
@@ -41,10 +41,9 @@ int main()
 		double sh_x_N;
 	};
 
-	// TODO
 	vector<SectorData> sectorData = {
 		{ "sector 45",   2,   3, "L_1_N", "L_1_F", -0.008, -3. },
-		{ "sector 56", 102, 103, "R_1_N", "R_1_F", +0.000, -3. }
+		//{ "sector 56", 102, 103, "R_1_N", "R_1_F", +0.000, -3. }
 	};
 
 	// get input
@@ -95,7 +94,7 @@ int main()
 		{
 			char path[100];
 
-			sprintf(path, "xangle_%u_beta_%.2f/%s/f_x_sh", 160, 0.30, sd.rp_N.c_str());
+			sprintf(path, "xangle_%u_beta_%.2f/%s/f_x_sh", 140, 0.30, sd.rp_N.c_str());
 			sh_x_N = ((TF1*) f_in_aux->Get(path))->Eval(cfg.fill);
 
 			sprintf(path, "xangle_%u_beta_%.2f/%s/f_x_slope", cfg.xangle, cfg.beta, sd.name.c_str());

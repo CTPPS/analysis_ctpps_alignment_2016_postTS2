@@ -156,7 +156,7 @@ TGraphErrors* BuildModeGraph(const TH2D *h2_y_vs_x, bool aligned, unsigned int /
 
 int main()
 {
-	bool useAuxFits = false;
+	bool useAuxFits = true;
 
 	// load config
 	if (cfg.LoadFrom("config.py") != 0)
@@ -179,7 +179,6 @@ int main()
 		double sh_x;
 	};
 
-	// TODO
 	vector<RPData> rpData = {
 		{ "L_1_F",   3, "sector 45", 0., -3. },
 		{ "L_1_N",   2, "sector 45", 0., -3. },
@@ -237,7 +236,7 @@ int main()
 			char path[100];
 
 			// to overcome the discrepancy in x-alignment results
-			sprintf(path, "xangle_%u_beta_%.2f/%s/f_x_sh", 160, 0.30, rpd.name.c_str());
+			sprintf(path, "xangle_%u_beta_%.2f/%s/f_x_sh", 140, 0.30, rpd.name.c_str());
 			sh_x = ((TF1*) f_in_aux->Get(path))->Eval(cfg.fill);
 
 			sprintf(path, "xangle_%u_beta_%.2f/%s/f_y_tilt", cfg.xangle, cfg.beta, rpd.name.c_str());
