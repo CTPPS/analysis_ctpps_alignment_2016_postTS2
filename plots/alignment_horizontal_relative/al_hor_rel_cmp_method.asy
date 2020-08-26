@@ -142,7 +142,7 @@ for (int ai : arms.keys)
 				obj.vExec("GetPoint", 2, ax, ay); real b = ax[0], b_unc = ay[0];
 				obj.vExec("GetPoint", 3, ax, ay); real b_fs = ax[0], b_fs_unc = ay[0];
 
-				if (b_fs == b_fs && b_fs_unc == b_fs_unc && b_fs > 1.)
+				if (b_fs == b_fs && b_fs_unc == b_fs_unc)
 				{
 					pen p = magenta;
 					draw((x, b_fs), mSq+4pt + p);
@@ -153,10 +153,10 @@ for (int ai : arms.keys)
 	}
 
 	real y_mean = GetMeanHorizontalRelativeAlignment(a_sectors[ai]);
-	draw((-1, y_mean)--(fill_data.length, y_mean), black);
+	//draw((-1, y_mean)--(fill_data.length, y_mean), black);
 
-	real y_min = y_mean - 0.5;
-	real y_max = y_mean + 1.0;
+	real y_min = y_mean - 0.2;
+	real y_max = y_mean + 0.5;
 
 	DrawFillMarkers(y_min, y_max);
 

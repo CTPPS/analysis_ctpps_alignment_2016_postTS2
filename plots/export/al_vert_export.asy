@@ -15,7 +15,7 @@ sample_labels.push("ALL");
 
 real sfa = 0.3;
 
-yTicksDef = RightTicks(0.5, 0.1);
+yTicksDef = RightTicks(0.2, 0.1);
 
 xSizeDef = 40cm;
 
@@ -77,10 +77,14 @@ for (int rpi : rps.keys)
 
 					real ax[] = { 0. };
 					real ay[] = { 0. };
-					results.vExec("GetPoint", 2, ax, ay); real sh_y = ax[0], sh_y_unc = ay[0];
+					results.vExec("GetPoint", 2, ax, ay); real b = ax[0], b_unc = ay[0];
+					results.vExec("GetPoint", 3, ax, ay); real b_fs = ax[0], b_fs_unc = ay[0];
 
 					real x = fdi;
 					pen p = black;
+
+					real sh_y = b_fs;
+					real sh_y_unc = b_fs_unc;
 
 					if (sh_y_unc > 0 && sh_y_unc < 1)
 					{
@@ -109,7 +113,7 @@ for (int rpi : rps.keys)
 	real y_mean = GetMeanVerticalAlignment(rps[rpi]);
 	//draw((-1, y_mean)--(fill_data.length, y_mean), black);
 
-	limits((-1, y_mean-1), (fill_data.length, y_mean+1), Crop);
+	limits((-1, y_mean-0.5), (fill_data.length, y_mean+0.5), Crop);
 
 	AttachLegend("{\SetFontSizesXX " + rp_labels[rpi] + "}");
 }

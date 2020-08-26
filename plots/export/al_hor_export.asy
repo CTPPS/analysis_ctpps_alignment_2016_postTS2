@@ -118,7 +118,7 @@ for (int rpi : rps.keys)
 	real y_mean = GetMeanHorizontalAlignment(rps[rpi]);
 	//draw((-1, y_mean)--(fill_data.length, y_mean), black);
 
-	limits((-1, y_mean-1), (fill_data.length, y_mean+1), Crop);
+	limits((-1, y_mean-0.5), (fill_data.length, y_mean+0.5), Crop);
 
 	AttachLegend("{\SetFontSizesXX " + rp_labels[rpi] + "}");
 }

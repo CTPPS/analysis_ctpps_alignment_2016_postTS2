@@ -114,7 +114,13 @@ for (int rpi : rps.keys)
 	}
 
 	real y_mean = GetMeanHorizontalAlignment(rps[rpi]);
-	//draw((-1, y_mean)--(fill_data.length, y_mean), black);
+
+	real y_guess = 0.;
+	if (rps[rpi] == "L_1_F") y_guess = -4.14;
+	if (rps[rpi] == "L_1_N") y_guess = -3.53;
+	if (rps[rpi] == "R_1_F") y_guess = -3.61;
+
+	draw((-1, y_guess)--(fill_data.length, y_guess), black+dashed);
 
 	real y_min = y_mean - 1.0;
 	real y_max = y_mean + 1.0;

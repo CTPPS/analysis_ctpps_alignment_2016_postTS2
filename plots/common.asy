@@ -5,12 +5,12 @@ int a_nr_rp_ids[], a_fr_rp_ids[];
 arms.push("arm0"); a_labels.push("sector 45 (L, z+)"); a_sectors.push("sector 45"); a_nr_rps.push("L_1_N"); a_fr_rps.push("L_1_F"); a_nr_rp_ids.push(2); a_fr_rp_ids.push(3);
 arms.push("arm1"); a_labels.push("sector 56 (R, z-)"); a_sectors.push("sector 56"); a_nr_rps.push("R_1_N"); a_fr_rps.push("R_1_F"); a_nr_rp_ids.push(102); a_fr_rp_ids.push(103);
 
-string rps[], rp_labels[], rp_arms[], rp_dirs[];
+string rps[], rp_labels[], rp_arms[], rp_dirs[], rp_sectors[];
 int rp_ids[];
-rps.push("L_1_F"); rp_labels.push("45-210-fr"); rp_arms.push("arm0"); rp_dirs.push("sector 45/F"); rp_ids.push(3);
-rps.push("L_1_N"); rp_labels.push("45-210-nr"); rp_arms.push("arm0"); rp_dirs.push("sector 45/N"); rp_ids.push(2);
-rps.push("R_1_N"); rp_labels.push("56-210-nr"); rp_arms.push("arm1"); rp_dirs.push("sector 56/N"); rp_ids.push(102);
-rps.push("R_1_F"); rp_labels.push("56-210-fr"); rp_arms.push("arm1"); rp_dirs.push("sector 56/F"); rp_ids.push(103);
+rps.push("L_1_F"); rp_labels.push("45-210-fr"); rp_arms.push("arm0"); rp_dirs.push("sector 45/F"); rp_sectors.push("sector 45"); rp_ids.push(3);
+rps.push("L_1_N"); rp_labels.push("45-210-nr"); rp_arms.push("arm0"); rp_dirs.push("sector 45/N"); rp_sectors.push("sector 45"); rp_ids.push(2);
+//rps.push("R_1_N"); rp_labels.push("56-210-nr"); rp_arms.push("arm1"); rp_dirs.push("sector 56/N"); rp_sectors.push("sector 56"); rp_ids.push(102);
+rps.push("R_1_F"); rp_labels.push("56-210-fr"); rp_arms.push("arm1"); rp_dirs.push("sector 56/F"); rp_sectors.push("sector 56"); rp_ids.push(103);
 
 string version_alig = "alig-version2";
 
@@ -206,7 +206,7 @@ real GetMeanHorizontalAlignment(string rp)
 	if (rp == "L_1_F") return -4.3;
 	if (rp == "L_1_N") return -3.4;
 	if (rp == "R_1_N") return 0;
-	if (rp == "R_1_F") return -4.0;
+	if (rp == "R_1_F") return -3.7;
 
 	return 0;
 }
