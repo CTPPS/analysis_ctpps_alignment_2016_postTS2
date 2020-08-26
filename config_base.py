@@ -126,11 +126,11 @@ config = cms.PSet(
 
     x_alignment_meth_o = cms.PSet(
       rp_L_1_F = cms.PSet(
-        x_min = cms.double(8.5),
+        x_min = cms.double(9.8),
         x_max = cms.double(16),
       ),
       rp_L_1_N = cms.PSet(
-        x_min = cms.double(8.5),
+        x_min = cms.double(9.3),
         x_max = cms.double(15.),
       ),
       rp_R_1_N = cms.PSet(

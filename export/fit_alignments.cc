@@ -39,7 +39,9 @@ int main()
 {
 	// initialisation
 	InitFillsRuns(false);
+
 	//PrintFillRunMapping();
+	//return 0;
 
 	string topDir = "../data/phys-version1";
 
